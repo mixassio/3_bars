@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 The module is designed to work with a resource https://data.mos.ru/opendata/7710881420-bary.
 The module allows you to find the smallest bar using the function get_biggest_bar(data),
