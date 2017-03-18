@@ -21,10 +21,7 @@ def load_data(filepath):
     """
     if os.path.exists(filepath):
         char_type = chardet.detect(open(filepath, "rb").read())['encoding']
-        with codecs.open(filepath, 'rb', encoding=char_type) as f, codecs.open("new.json", 'wb',encoding='utf-8') as g:
-            for i in f:
-                print(i, file=g)
-        with open('new.json', 'r', encoding='utf-8') as fh:
+        with codecs.open(filepath, 'rb', encoding=char_type) as fh:
             return json.load(fh)
 
 
@@ -40,7 +37,7 @@ def get_biggest_bar(data):
         if bar['SeatsCount'] > max_seats_counts:
             max_seats_counts = bar['SeatsCount']
             num_bar = bar_id
-    return 'Самый большой бар - ' + data[num_bar]['Name'] + ', по адресу ' + data[num_bar]['Address']
+    return data[num_bar]
 
 
 def get_smallest_bar(data):
@@ -55,7 +52,7 @@ def get_smallest_bar(data):
         if 0 < bar['SeatsCount'] < min_seats_counts:
             min_seats_counts = bar['SeatsCount']
             num_bar = bar_id
-    return 'Самый маленький бар - ' + data[num_bar]['Name'] + ', по адресу ' + data[num_bar]['Address']
+    return data[num_bar]
 
 
 def get_closest_bar(data, longitude, latitude):
@@ -77,11 +74,19 @@ def get_closest_bar(data, longitude, latitude):
         if distance_to_bar < min_dist_to_bar:
             min_dist_to_bar = distance_to_bar
             num_bar = bar_id
-    return 'Ближайший бар - ' + data[num_bar]['Name'] + ', по адресу ' + data[num_bar]['Address']
+    return data[num_bar]
 
 
 if __name__ == '__main__':
+
     data_bars = load_data('data.json')
-    print(get_biggest_bar(data_bars))
-    print(get_smallest_bar(data_bars))
-    print(get_closest_bar(data_bars, 37.618762, 55.625307))
+    print(data_bars)
+
+    big_bar = get_biggest_bar(data_bars)
+    print('Самый большой бар - {}, по адресу {}'.format(big_bar['Name'], big_bar['Address']))
+
+    small_bar = get_smallest_bar(data_bars)
+    print('Самый маленький бар - {}, по адресу {}'.format(small_bar['Name'], small_bar['Address']))
+
+    nearest_bar = get_closest_bar(data_bars, 37.618762, 55.625307)
+    print('Ближайший бар - {}, по адресу {}'.format(nearest_bar['Name'], nearest_bar['Address']))
