@@ -7,7 +7,7 @@ import math
 import sys
 import argparse
 
-def Create_parser ():
+def create_parser ():
     parser = argparse.ArgumentParser()
     parser.add_argument ('filepath')
     parser.add_argument ('-min', '--minimum', action='store_const', const=True)
@@ -49,7 +49,7 @@ def get_closest_bar(data, longitude, latitude):
 
 
 if __name__ == '__main__':
-    parser = Create_parser()
+    parser = create_parser()
     namespace = parser.parse_args()
     data_bars = load_data(namespace.filepath)
     
