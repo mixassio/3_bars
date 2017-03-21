@@ -20,9 +20,10 @@ def load_data(filepath):
     :return: json-object
     """
     if os.path.exists(filepath):
-        char_type = chardet.detect(open(filepath, "rb").read())['encoding']
-        with codecs.open(filepath, 'rb', encoding=char_type) as fh:
-            return json.load(fh)
+        with open(filepath, 'rb') as file_json:
+            char_type = chardet.detect(file_json.read())['encoding']
+        with codecs.open(filepath, 'rb', encoding=char_type) as file_json:
+            return json.load(file_json)
 
 
 def get_biggest_bar(data):
@@ -31,13 +32,7 @@ def get_biggest_bar(data):
     :param data: json-object with bars
     :return: Message with the name of the bar and address
     """
-    max_seats_counts = 0
-    num_bar = 0
-    for bar_id, bar in enumerate(data):
-        if bar['SeatsCount'] > max_seats_counts:
-            max_seats_counts = bar['SeatsCount']
-            num_bar = bar_id
-    return data[num_bar]
+    return max(data, key=lambda x: x['SeatsCount'])
 
 
 def get_smallest_bar(data):
@@ -46,13 +41,7 @@ def get_smallest_bar(data):
     :param data: json-object with bars
     :return: Message with the name of the bar and address
     """
-    min_seats_counts = 1000
-    num_bar = 0
-    for bar_id, bar in enumerate(data):
-        if 0 < bar['SeatsCount'] < min_seats_counts:
-            min_seats_counts = bar['SeatsCount']
-            num_bar = bar_id
-    return data[num_bar]
+    return min(data, key=lambda x:x['SeatsCount'])
 
 
 def get_closest_bar(data, longitude, latitude):
