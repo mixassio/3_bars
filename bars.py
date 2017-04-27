@@ -1,10 +1,8 @@
-
 import json
 import codecs
 import os
-import chardet
 import math
-import sys
+import chardet
 import argparse
 
 def create_parser ():
@@ -29,29 +27,27 @@ def get_biggest_bar(data):
 
 
 def get_smallest_bar(data):
-    return max(data, key=lambda x:x['SeatsCount'])
-
-
-def get_smallest_bar(data):
     return min(data, key=lambda x:x['SeatsCount'])
 
 
+def distance(longitude1, latitude1, longitude2, latitude2):
+    longitude1, latitude1, longitude2, latitude2 = map(math.radians, [longitude1, latitude1, longitude2, latitude2])
+    difference_longitude = longitude2 - longitude1
+    difference_latitude = latitude2 - latitude1
+    earth_radius = 6371
+    return 2 * earth_radius * math.asin(math.sqrt(
+        math.sin(difference_latitude / 2) ** 2 + math.cos(latitude1) * math.cos(latitude2) * math.sin(difference_longitude / 2) ** 2))
+
+
 def get_closest_bar(data, longitude, latitude):
-    mx = 0
-    my = 0
-    min_dist_to_bar = 1000.
+    min_dist_to_bar = 1.
     num_bar = 0
     for bar_id, bar in enumerate(data):
-        mx = abs(latitude - float(bar['Latitude_WGS84']))
-        my = abs(longitude - float(bar['Longitude_WGS84']))
-        distance_to_bar = math.sqrt(mx**2 + my**2)
+        distance_to_bar = distance(longitude, latitude, float(bar['Longitude_WGS84']), float(bar['Latitude_WGS84']))
         if distance_to_bar < min_dist_to_bar:
             min_dist_to_bar = distance_to_bar
             num_bar = bar_id
     return data[num_bar]
-
-def get_closest_bar1(data, longitude, latitude):
-    return min(data, key=lambda x: abs(float(x['Longitude_WGS84'])-longitude and abs(float(x['Latitude_WGS84'])-latitude)))
 
 
 if __name__ == '__main__':
@@ -65,22 +61,13 @@ if __name__ == '__main__':
     if namespace.minimum:
         small_bar = get_smallest_bar(data_bars)
         print('Самый маленький бар - {}, по адресу {}'.format(small_bar['Name'], small_bar['Address']))
-    '''if namespace.nearest:
-        nearest_bar = get_closest_bar(data_bars, float(namespace.nearest[0]), float(namespace.nearest[0]))
-        print('Ближайший бар - {}, по адресу {}'.format(nearest_bar['Name'], nearest_bar['Address']))'''
-        
-    if namespace.maximum==None and namespace.minimum==None and namespace.nearest==None:
+    if namespace.maximum is None and namespace.minimum is None and namespace.nearest is None:
         big_bar = get_biggest_bar(data_bars)
         print('Самый большой бар - {}, по адресу {}'.format(big_bar['Name'], big_bar['Address']))
         small_bar = get_smallest_bar(data_bars)
         print('Самый маленький бар - {}, по адресу {}'.format(small_bar['Name'], small_bar['Address']))
         print('Для поиска ближайшего бара введите координаты')
     if namespace.nearest:
-        nearest_bar = get_closest_bar1(data_bars, float(namespace.nearest[0]), float(namespace.nearest[1]))
-        print('Ближайший бар - {}, по адресу {}, koord {} {}'
-              .format(nearest_bar['Name'], nearest_bar['Address'], nearest_bar['Longitude_WGS84'], nearest_bar['Latitude_WGS84']))
         nearest_bar = get_closest_bar(data_bars, float(namespace.nearest[0]), float(namespace.nearest[1]))
         print('Ближайший бар - {}, по адресу {}, koord {} {}'
               .format(nearest_bar['Name'], nearest_bar['Address'], nearest_bar['Longitude_WGS84'], nearest_bar['Latitude_WGS84']))
-        #print(get_closest_bar1(data_bars, float(namespace.nearest[0]), float(namespace.nearest[0])))
-
