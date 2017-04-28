@@ -8,8 +8,6 @@ import argparse
 def create_parser ():
     parser = argparse.ArgumentParser()
     parser.add_argument ('filepath')
-    parser.add_argument ('-min', '--minimum', action='store_const', const=True)
-    parser.add_argument ('-max', '--maximum', action='store_const', const=True)
     parser.add_argument ('-n', '--nearest', nargs=2) 
     return parser
     
@@ -47,27 +45,25 @@ def get_closest_bar(data, longitude, latitude):
         if distance_to_bar < min_dist_to_bar:
             min_dist_to_bar = distance_to_bar
             num_bar = bar_id
+    print(data[num_bar], num_bar)
     return data[num_bar]
+
+
+def pretty_print(namespace, data_bars):
+    big_bar = get_biggest_bar(data_bars)
+    print('Самый большой бар - {}, по адресу {}'.format(big_bar['Name'], big_bar['Address']))
+    small_bar = get_smallest_bar(data_bars)
+    print('Самый маленький бар - {}, по адресу {}'.format(small_bar['Name'], small_bar['Address']))
+    if namespace.nearest is None:
+        print('Для поиска ближайшего бара введите координаты в коммандной строке с ключём -n')
+    if namespace.nearest:
+        nearest_bar = get_closest_bar(data_bars, float(namespace.nearest[0]), float(namespace.nearest[1]))
+        print('Ближайший бар - {}, по адресу {}, koord {} {}'
+              .format(nearest_bar['Name'], nearest_bar['Address'], nearest_bar['Longitude_WGS84'], nearest_bar['Latitude_WGS84']))
 
 
 if __name__ == '__main__':
     parser = create_parser()
     namespace = parser.parse_args()
     data_bars = load_data(namespace.filepath)
-    
-    if namespace.maximum:
-        big_bar = get_biggest_bar(data_bars)
-        print('Самый большой бар - {}, по адресу {}'.format(big_bar['Name'], big_bar['Address']))
-    if namespace.minimum:
-        small_bar = get_smallest_bar(data_bars)
-        print('Самый маленький бар - {}, по адресу {}'.format(small_bar['Name'], small_bar['Address']))
-    if namespace.maximum is None and namespace.minimum is None and namespace.nearest is None:
-        big_bar = get_biggest_bar(data_bars)
-        print('Самый большой бар - {}, по адресу {}'.format(big_bar['Name'], big_bar['Address']))
-        small_bar = get_smallest_bar(data_bars)
-        print('Самый маленький бар - {}, по адресу {}'.format(small_bar['Name'], small_bar['Address']))
-        print('Для поиска ближайшего бара введите координаты')
-    if namespace.nearest:
-        nearest_bar = get_closest_bar(data_bars, float(namespace.nearest[0]), float(namespace.nearest[1]))
-        print('Ближайший бар - {}, по адресу {}, koord {} {}'
-              .format(nearest_bar['Name'], nearest_bar['Address'], nearest_bar['Longitude_WGS84'], nearest_bar['Latitude_WGS84']))
+    pretty_print(namespace,data_bars)
