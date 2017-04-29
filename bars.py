@@ -5,6 +5,7 @@ import math
 import chardet
 import argparse
 
+
 def create_parser ():
     parser = argparse.ArgumentParser()
     parser.add_argument ('filepath')
@@ -38,15 +39,7 @@ def distance(longitude1, latitude1, longitude2, latitude2):
 
 
 def get_closest_bar(data, longitude, latitude):
-    min_dist_to_bar = 1.
-    num_bar = 0
-    for bar_id, bar in enumerate(data):
-        distance_to_bar = distance(longitude, latitude, float(bar['Longitude_WGS84']), float(bar['Latitude_WGS84']))
-        if distance_to_bar < min_dist_to_bar:
-            min_dist_to_bar = distance_to_bar
-            num_bar = bar_id
-    print(data[num_bar], num_bar)
-    return data[num_bar]
+    return min(data, key=lambda x: distance(longitude, latitude, float(x['Longitude_WGS84']), float(x['Latitude_WGS84'])))
 
 
 def pretty_print(namespace, data_bars):
